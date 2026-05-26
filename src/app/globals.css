@@ -33,3 +33,130 @@ body {
   background: #cbd5e1;
 }
 
+/* ==========================================================================
+   Custom Responsive Media Queries & Accessibility Styling
+   ========================================================================== */
+
+/* 1. Ultra-Small Devices (e.g., iPhone SE, older Android devices - max-width: 380px) */
+@media screen and (max-width: 380px) {
+  /* Compress spacing for maximum screen real estate */
+  .form-main-container {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+
+  .form-card-wrapper {
+    padding: 1rem !important;
+    border-radius: 1rem !important;
+  }
+
+  /* Compact typography */
+  .form-header-intro h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  .form-header-intro p {
+    font-size: 0.75rem !important;
+  }
+
+  /* Refined scaling for bilingual floating labels to prevent truncation */
+  .bilingual-floating-label {
+    font-size: 0.75rem !important;
+    left: 2.5rem !important;
+  }
+
+  .peer:focus ~ .bilingual-floating-label,
+  .peer:not(:placeholder-shown) ~ .bilingual-floating-label {
+    transform: translateY(-24px) scale(0.85) !important;
+    font-size: 0.7rem !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+  }
+}
+
+/* 2. Compact Landscape Orientation (Mobile viewports with constrained height) */
+@media screen and (max-height: 480px) and (orientation: landscape) {
+  .form-main-container {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  .form-header-intro {
+    margin-bottom: 1rem !important;
+  }
+
+  .form-card-wrapper {
+    padding: 1.25rem !important;
+  }
+}
+
+/* 3. Professional Print Styling (Optimized for PDF exports and physical printing) */
+@media print {
+  /* Establish clean print boundaries */
+  @page {
+    margin: 1.5cm;
+    size: portrait;
+  }
+
+  /* Reset layout structure */
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 12pt !important;
+  }
+
+  /* Hide immersive screen elements like sticky navigation, decorative gradients, and interactive buttons */
+  header,
+  footer,
+  button,
+  .absolute,
+  [role="status"],
+  .toast-container,
+  .progress-tracker-text {
+    display: none !important;
+  }
+
+  /* Strip card properties for flat paper ink-friendly rendering */
+  .form-card-wrapper {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    backdrop-filter: none !important;
+  }
+
+  .form-main-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Format fields cleanly for filling on paper */
+  input,
+  textarea {
+    border-color: #94a3b8 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border-width: 0 0 1px 0 !important; /* Bottom line border for clean look */
+    border-radius: 0 !important;
+    padding-left: 0.5rem !important;
+  }
+
+  /* Ensure correct display of fields */
+  .bilingual-floating-label {
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
+    transform: none !important;
+    display: block !important;
+    margin-bottom: 0.25rem !important;
+    color: #475569 !important;
+    font-size: 10pt !important;
+    font-weight: 600 !important;
+  }
+}
+

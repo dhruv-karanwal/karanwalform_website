@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Calendar, Users, Phone, MapPin, Map, Send, Loader2, AlertCircle, Fingerprint } from "lucide-react";
 
@@ -49,27 +49,7 @@ export default function Home() {
     address: false,
   });
 
-  // Track validation errors
-  const [errors, setErrors] = useState<Record<FieldName, string>>({
-    fullName: "",
-    age: "",
-    fathersName: "",
-    contactNumber: "",
-    aadhaarNumber: "",
-    district: "",
-    address: "",
-  });
 
-  // Track field validity
-  const [validFields, setValidFields] = useState<Record<FieldName, boolean>>({
-    fullName: false,
-    age: false,
-    fathersName: false,
-    contactNumber: false,
-    aadhaarNumber: false,
-    district: false,
-    address: false,
-  });
 
   const [showToast, setShowToast] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -163,21 +143,33 @@ export default function Home() {
     return { err, valid };
   };
 
-  // Perform live validation on change
-  useEffect(() => {
-    const newErrors = { ...errors };
-    const newValid = { ...validFields };
+  // Dynamically compute validation errors and validity state on-the-fly during render
+  const errors: Record<FieldName, string> = {
+    fullName: "",
+    age: "",
+    fathersName: "",
+    contactNumber: "",
+    aadhaarNumber: "",
+    district: "",
+    address: "",
+  };
 
-    Object.keys(values).forEach((key) => {
-      const field = key as FieldName;
-      const { err, valid } = validateField(field, values[field]);
-      newErrors[field] = err;
-      newValid[field] = valid;
-    });
+  const validFields: Record<FieldName, boolean> = {
+    fullName: false,
+    age: false,
+    fathersName: false,
+    contactNumber: false,
+    aadhaarNumber: false,
+    district: false,
+    address: false,
+  };
 
-    setErrors(newErrors);
-    setValidFields(newValid);
-  }, [values]);
+  Object.keys(values).forEach((key) => {
+    const field = key as FieldName;
+    const { err, valid } = validateField(field, values[field]);
+    errors[field] = err;
+    validFields[field] = valid;
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -269,10 +261,10 @@ export default function Home() {
         throw new Error(result.message || "Failed to save submission / सबमिशन सहेजने में विफल");
       }
 
-    } catch (err: any) {
+    } catch (err) {
       console.error("Submission failed:", err);
       // Map server or network failure messages beautifully
-      const errMsg = err.message || err.toString();
+      const errMsg = err instanceof Error ? err.message : String(err);
       if (errMsg.includes("Failed to fetch")) {
         setApiError("Network Connection Timeout. Please check your internet connection or verify script deployment. / नेटवर्क कनेक्शन समय समाप्त। कृपया अपना इंटरनेट कनेक्शन जांचें या स्क्रिप्ट परिनियोजन सत्यापित करें।");
       } else {
@@ -287,7 +279,7 @@ export default function Home() {
     <>
       <Header />
 
-      <main className="flex-grow flex flex-col justify-center items-center py-12 px-4 sm:px-6 relative overflow-hidden">
+      <main className="form-main-container flex-grow flex flex-col justify-center items-center py-12 px-4 sm:px-6 relative overflow-hidden">
         {/* Modern premium visual background blobs */}
         <div className="absolute top-1/4 left-1/4 -z-10 h-72 w-72 rounded-full bg-blue-500/5 blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 -z-10 h-96 w-96 rounded-full bg-indigo-500/5 blur-3xl" />
@@ -300,7 +292,7 @@ export default function Home() {
           className="w-full max-w-2xl"
         >
           {/* Intro Text header */}
-          <div className="text-center mb-8 space-y-2">
+          <div className="form-header-intro text-center mb-8 space-y-2">
             <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
               KaranwalGroup Portal / करनवाल ग्रुप पोर्टल
             </span>
@@ -316,7 +308,7 @@ export default function Home() {
           </div>
 
           {/* Form Card wrapper */}
-          <div className="bg-white/95 border border-slate-100/80 shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] backdrop-blur-md rounded-2xl p-6 sm:p-8 space-y-6">
+          <div className="form-card-wrapper bg-white/95 border border-slate-100/80 shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] backdrop-blur-md rounded-2xl p-6 sm:p-8 space-y-6">
             {/* Live Progress Bar */}
             <FormProgress filledCount={filledCount} totalCount={totalCount} />
 

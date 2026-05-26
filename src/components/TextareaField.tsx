@@ -79,7 +79,7 @@ export default function TextareaField({
         {/* Bilingual Floating Label */}
         <label
           htmlFor={id}
-          className="absolute left-11 top-3.5 origin-[0] text-sm text-slate-400 transition-all duration-200 pointer-events-none
+          className="bilingual-floating-label absolute left-11 top-3.5 origin-[0] text-sm text-slate-400 transition-all duration-200 pointer-events-none
             peer-focus:-translate-y-[28px] peer-focus:text-xs peer-focus:bg-white peer-focus:px-1.5 peer-focus:text-indigo-600
             peer-[:not(:placeholder-shown)]:-translate-y-[28px] peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-1.5 peer-[:not(:placeholder-shown)]:text-slate-500"
         >
