@@ -12,14 +12,14 @@ export default function Footer() {
           <div className="flex items-center gap-2 text-slate-400">
             <Lock className="h-4 w-4 shrink-0 text-slate-400" />
             <span className="text-xs font-medium">
-              <span className="font-light text-slate-400 font-sans"></span>
+              Secure Corporate Portal <span className="font-light text-slate-400 font-sans">/ सुरक्षित कॉर्पोरेट पोर्टल</span>
             </span>
           </div>
 
           {/* Legal and Disclaimer Notice */}
           <div className="space-y-1 sm:text-right">
             <p className="text-xs font-bold text-slate-500">
-              © {new Date().getFullYear()}
+              © {new Date().getFullYear()} KaranwalGroup. All Rights Reserved.
             </p>
             <p className="text-[10px] text-slate-400 leading-relaxed">
               This is a secure official registration utility. Your personal data is protected under absolute privacy regulations.

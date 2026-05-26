@@ -15,10 +15,10 @@ export default function Header() {
             </div>
             <div>
               <h1 className="text-sm font-bold tracking-wide text-slate-800 sm:text-base">
-                <span className="text-indigo-600 font-medium font-sans"></span>
+                KaranwalGroup <span className="text-indigo-600 font-medium font-sans">/ करनवाल ग्रुप</span>
               </h1>
               <p className="text-[10px] text-slate-500 font-medium sm:text-xs">
-                <span className="font-light"></span>
+                Official Form Service <span className="font-light">/ आधिकारिक फॉर्म सेवा</span>
               </p>
             </div>
           </div>

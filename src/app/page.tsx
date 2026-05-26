@@ -288,10 +288,10 @@ export default function Home() {
           {/* Intro Text header */}
           <div className="text-center mb-8 space-y-2">
             <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
-              Bilingual Survey & Registration Portal
+              KaranwalGroup Portal / करनवाल ग्रुप पोर्टल
             </span>
             <h2 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">
-              Registration Form <span className="text-indigo-600 font-medium font-sans">/ पंजीकरण फॉर्म</span>
+              KaranwalGroup Form <span className="text-indigo-600 font-medium font-sans">/ करनवाल ग्रुप फॉर्म</span>
             </h2>
             <p className="text-xs text-slate-500 font-medium max-w-md mx-auto sm:text-sm">
               Please enter your accurate personal credentials below. Every field marked is essential for dynamic profile creation.
