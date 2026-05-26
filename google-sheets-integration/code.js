@@ -15,7 +15,7 @@ function doPost(e) {
     var data = JSON.parse(jsonString);
     
     // 2. Validate essential fields to prevent empty database rows
-    if (!data.fullName || !data.age || !data.fathersName || !data.contactNumber || !data.address) {
+    if (!data.fullName || !data.age || !data.fathersName || !data.contactNumber || !data.district || !data.address) {
       return ContentService.createTextOutput(JSON.stringify({
         status: "error",
         message: "Required fields are missing / आवश्यक फ़ील्ड गायब हैं"
@@ -34,10 +34,11 @@ function doPost(e) {
         "Age (years) / आयु (वर्ष)",
         "Father's Name / पिता का नाम",
         "Contact Number / संपर्क संख्या",
+        "District / जिला",
         "Residential Address / आवासीय पता"
       ]);
       // Make headers bold for a professional visual look in Google Sheets
-      sheet.getRange(1, 1, 1, 6).setFontWeight("bold").setBackground("#f1f5f9");
+      sheet.getRange(1, 1, 1, 7).setFontWeight("bold").setBackground("#f1f5f9");
     }
     
     // 5. Generate timezone-aware Timestamp
@@ -54,6 +55,7 @@ function doPost(e) {
       parseInt(data.age, 10),
       data.fathersName.toString().trim(),
       safeContactNumber,
+      data.district.toString().trim(),
       data.address.toString().trim()
     ]);
     

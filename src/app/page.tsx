@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Calendar, Users, Phone, MapPin, Send, Loader2, AlertCircle } from "lucide-react";
+import { User, Calendar, Users, Phone, MapPin, Map, Send, Loader2, AlertCircle } from "lucide-react";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -19,6 +19,7 @@ interface FormValues {
   age: string;
   fathersName: string;
   contactNumber: string;
+  district: string;
   address: string;
 }
 
@@ -31,6 +32,7 @@ export default function Home() {
     age: "",
     fathersName: "",
     contactNumber: "",
+    district: "",
     address: "",
   });
 
@@ -40,6 +42,7 @@ export default function Home() {
     age: false,
     fathersName: false,
     contactNumber: false,
+    district: false,
     address: false,
   });
 
@@ -49,6 +52,7 @@ export default function Home() {
     age: "",
     fathersName: "",
     contactNumber: "",
+    district: "",
     address: "",
   });
 
@@ -58,6 +62,7 @@ export default function Home() {
     age: false,
     fathersName: false,
     contactNumber: false,
+    district: false,
     address: false,
   });
 
@@ -113,6 +118,17 @@ export default function Home() {
           err = "";
         } else if (!/^[6-9]\d{9}$/.test(val)) {
           err = "Enter a valid 10-digit number starting with 6-9 / 6-9 से शुरू होने वाला मान्य 10-अंकीय नंबर दर्ज करें";
+        } else {
+          valid = true;
+        }
+        break;
+      }
+      case "district": {
+        const cleaned = val.trim();
+        if (cleaned.length === 0) {
+          err = "";
+        } else if (!/^[a-zA-Z\s]+$/.test(cleaned)) {
+          err = "Letters and spaces only / केवल अक्षर और स्पेस मान्य हैं";
         } else {
           valid = true;
         }
@@ -188,6 +204,7 @@ export default function Home() {
             if (f === "age") fieldErrors[f] = "Age is required / आयु आवश्यक है";
             if (f === "fathersName") fieldErrors[f] = "Father's Name is required / पिता का नाम आवश्यक है";
             if (f === "contactNumber") fieldErrors[f] = "Contact Number is required / संपर्क संख्या आवश्यक है";
+            if (f === "district") fieldErrors[f] = "District is required / जिला आवश्यक है";
             if (f === "address") fieldErrors[f] = "Address is required / आवासीय पता आवश्यक है";
           }
         });
@@ -234,6 +251,7 @@ export default function Home() {
           age: "",
           fathersName: "",
           contactNumber: "",
+          district: "",
           address: "",
         });
         setTouched({
@@ -241,6 +259,7 @@ export default function Home() {
           age: false,
           fathersName: false,
           contactNumber: false,
+          district: false,
           address: false,
         });
       } else {
@@ -362,6 +381,22 @@ export default function Home() {
                 error={touched.contactNumber ? errors.contactNumber : ""}
                 isValid={touched.contactNumber && validFields.contactNumber}
                 maxLength={10}
+                required
+              />
+
+              {/* District */}
+              <InputField
+                id="district"
+                name="district"
+                type="text"
+                labelEn="District"
+                labelHi="जिला"
+                icon={Map}
+                value={values.district}
+                onChange={handleChange}
+                onBlur={() => handleBlur("district")}
+                error={touched.district ? errors.district : ""}
+                isValid={touched.district && validFields.district}
                 required
               />
 
