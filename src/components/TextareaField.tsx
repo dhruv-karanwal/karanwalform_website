@@ -22,7 +22,7 @@ export default function TextareaField({
   className = "",
   id,
   placeholder = " ",
-  maxLength = 300,
+  maxLength,
   value = "",
   ...props
 }: TextareaFieldProps) {
@@ -104,13 +104,15 @@ export default function TextareaField({
             )}
           </AnimatePresence>
         </div>
-        <div className="text-[10px] font-semibold text-slate-400 sm:text-xs transition-all duration-200 select-none">
-          <span className={currentLength >= maxLength ? "text-amber-500 font-bold" : ""}>
-            {currentLength}
-          </span>
-          <span className="text-slate-300"> / </span>
-          <span>{maxLength}</span>
-        </div>
+        {maxLength !== undefined && (
+          <div className="text-[10px] font-semibold text-slate-400 sm:text-xs transition-all duration-200 select-none">
+            <span className={currentLength >= maxLength ? "text-amber-500 font-bold" : ""}>
+              {currentLength}
+            </span>
+            <span className="text-slate-300"> / </span>
+            <span>{maxLength}</span>
+          </div>
+        )}
       </div>
     </div>
   );

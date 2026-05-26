@@ -77,8 +77,6 @@ export default function Home() {
         const cleaned = val.trim();
         if (cleaned.length === 0) {
           err = "";
-        } else if (cleaned.length < 3) {
-          err = "Name must be at least 3 characters / नाम कम से कम 3 अक्षर का होना चाहिए";
         } else if (!/^[a-zA-Z\s]+$/.test(cleaned)) {
           err = "Letters and spaces only / केवल अक्षर और स्पेस मान्य हैं";
         } else {
@@ -103,8 +101,6 @@ export default function Home() {
         const cleaned = val.trim();
         if (cleaned.length === 0) {
           err = "";
-        } else if (cleaned.length < 3) {
-          err = "Father's name must be at least 3 characters / पिता का नाम कम से कम 3 अक्षर का होना चाहिए";
         } else if (!/^[a-zA-Z\s]+$/.test(cleaned)) {
           err = "Letters and spaces only / केवल अक्षर और स्पेस मान्य हैं";
         } else {
@@ -126,10 +122,6 @@ export default function Home() {
         const cleaned = val.trim();
         if (cleaned.length === 0) {
           err = "";
-        } else if (cleaned.length < 15) {
-          err = "Address must be at least 15 characters / पता कम से कम 15 अक्षर का होना चाहिए";
-        } else if (cleaned.length > 300) {
-          err = "Address cannot exceed 300 characters / पता 300 अक्षरों से अधिक नहीं हो सकता";
         } else {
           valid = true;
         }
@@ -321,7 +313,6 @@ export default function Home() {
                 onBlur={() => handleBlur("fullName")}
                 error={touched.fullName ? errors.fullName : ""}
                 isValid={touched.fullName && validFields.fullName}
-                maxLength={50}
                 required
               />
 
@@ -338,7 +329,6 @@ export default function Home() {
                 onBlur={() => handleBlur("age")}
                 error={touched.age ? errors.age : ""}
                 isValid={touched.age && validFields.age}
-                maxLength={3}
                 required
               />
 
@@ -355,7 +345,6 @@ export default function Home() {
                 onBlur={() => handleBlur("fathersName")}
                 error={touched.fathersName ? errors.fathersName : ""}
                 isValid={touched.fathersName && validFields.fathersName}
-                maxLength={50}
                 required
               />
 
@@ -388,7 +377,6 @@ export default function Home() {
                 onBlur={() => handleBlur("address")}
                 error={touched.address ? errors.address : ""}
                 isValid={touched.address && validFields.address}
-                maxLength={300}
                 required
               />
 
