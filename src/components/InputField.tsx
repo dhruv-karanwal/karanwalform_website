@@ -71,9 +71,9 @@ export default function InputField({
         {/* Bilingual Floating Label */}
         <label
           htmlFor={id}
-          className="bilingual-floating-label absolute left-11 top-1/2 -translate-y-1/2 origin-[0] text-sm text-slate-400 transition-all duration-200 pointer-events-none
-            peer-focus:-translate-y-[28px] peer-focus:text-xs peer-focus:bg-white peer-focus:px-1.5 peer-focus:text-indigo-600
-            peer-[:not(:placeholder-shown)]:-translate-y-[28px] peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-1.5 peer-[:not(:placeholder-shown)]:text-slate-500"
+          className="bilingual-floating-label absolute left-11 top-1/2 -translate-y-1/2 origin-[0] text-sm text-slate-400 transition-all duration-200 pointer-events-none truncate max-w-[calc(100%-3.5rem)]
+            peer-focus:-translate-y-[28px] peer-focus:text-xs peer-focus:bg-white peer-focus:px-1.5 peer-focus:text-indigo-600 peer-focus:max-w-none
+            peer-[:not(:placeholder-shown)]:-translate-y-[28px] peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-1.5 peer-[:not(:placeholder-shown)]:text-slate-500 peer-[:not(:placeholder-shown)]:max-w-none"
         >
           {labelEn} <span className="font-normal text-slate-400 font-sans">/ {labelHi}</span>
         </label>

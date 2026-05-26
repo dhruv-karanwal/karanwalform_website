@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Calendar, Users, Phone, MapPin, Map, Send, Loader2, AlertCircle, Fingerprint } from "lucide-react";
+import { User, Calendar, Users, Phone, MapPin, Map, Send, Loader2, AlertCircle, Fingerprint, Mars, Venus } from "lucide-react";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -17,6 +17,7 @@ const DEFAULT_SHEET_URL = "https://script.google.com/macros/s/AKfycbxgrTJHnKjWzH
 interface FormValues {
   fullName: string;
   age: string;
+  gender: string;
   fathersName: string;
   contactNumber: string;
   aadhaarNumber: string;
@@ -31,6 +32,7 @@ export default function Home() {
   const [values, setValues] = useState<FormValues>({
     fullName: "",
     age: "",
+    gender: "",
     fathersName: "",
     contactNumber: "",
     aadhaarNumber: "",
@@ -42,6 +44,7 @@ export default function Home() {
   const [touched, setTouched] = useState<Record<FieldName, boolean>>({
     fullName: false,
     age: false,
+    gender: false,
     fathersName: false,
     contactNumber: false,
     aadhaarNumber: false,
@@ -82,6 +85,17 @@ export default function Home() {
           err = "Please enter a valid age number / कृपया एक मान्य आयु संख्या दर्ज करें";
         } else if (parsed < 1 || parsed > 120) {
           err = "Age must be between 1 and 120 / आयु 1 से 120 के बीच होनी चाहिए";
+        } else {
+          valid = true;
+        }
+        break;
+      }
+      case "gender": {
+        const cleaned = val.trim();
+        if (cleaned.length === 0) {
+          err = "Gender is required / लिंग आवश्यक है";
+        } else if (cleaned !== "Male" && cleaned !== "Female") {
+          err = "Please select a gender / कृपया लिंग का चयन करें";
         } else {
           valid = true;
         }
@@ -147,6 +161,7 @@ export default function Home() {
   const errors: Record<FieldName, string> = {
     fullName: "",
     age: "",
+    gender: "",
     fathersName: "",
     contactNumber: "",
     aadhaarNumber: "",
@@ -157,6 +172,7 @@ export default function Home() {
   const validFields: Record<FieldName, boolean> = {
     fullName: false,
     age: false,
+    gender: false,
     fathersName: false,
     contactNumber: false,
     aadhaarNumber: false,
@@ -242,6 +258,7 @@ export default function Home() {
         setValues({
           fullName: "",
           age: "",
+          gender: "",
           fathersName: "",
           contactNumber: "",
           aadhaarNumber: "",
@@ -251,6 +268,7 @@ export default function Home() {
         setTouched({
           fullName: false,
           age: false,
+          gender: false,
           fathersName: false,
           contactNumber: false,
           aadhaarNumber: false,
@@ -345,6 +363,91 @@ export default function Home() {
                 isValid={touched.age && validFields.age}
                 required
               />
+
+              {/* Gender Selection */}
+              <div className="w-full space-y-1">
+                <label className="block text-xs font-semibold text-slate-500 pl-1.5 mt-2">
+                  Gender <span className="font-normal text-slate-400 font-sans">/ लिंग</span>
+                  <span className="text-rose-500 ml-0.5">*</span>
+                </label>
+                
+                <div className="grid grid-cols-2 gap-4 pt-1">
+                  {/* Male Checkbox Option */}
+                  <label
+                    htmlFor="gender-male"
+                    className={`flex items-center gap-3 p-3.5 rounded-xl border bg-slate-50/30 text-sm cursor-pointer transition-all duration-200 select-none
+                      ${
+                        values.gender === "Male"
+                          ? "border-indigo-500 bg-indigo-50/10 ring-4 ring-indigo-500/10 text-indigo-700 font-semibold"
+                          : touched.gender && errors.gender
+                          ? "border-rose-300 hover:border-rose-400"
+                          : "border-slate-200 hover:border-indigo-300 hover:bg-slate-50/50 text-slate-600"
+                      }`}
+                  >
+                    <input
+                      type="checkbox"
+                      id="gender-male"
+                      name="gender"
+                      checked={values.gender === "Male"}
+                      onChange={() => {
+                        setValues(prev => ({ ...prev, gender: prev.gender === "Male" ? "" : "Male" }));
+                        setTouched(prev => ({ ...prev, gender: true }));
+                      }}
+                      className="h-4.5 w-4.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0 cursor-pointer"
+                    />
+                    <div className="flex items-center gap-2">
+                      <Mars className={`h-4.5 w-4.5 ${values.gender === "Male" ? "text-indigo-600" : "text-slate-400"}`} />
+                      <span>Male <span className="font-normal font-sans opacity-80">/ पुरुष</span></span>
+                    </div>
+                  </label>
+
+                  {/* Female Checkbox Option */}
+                  <label
+                    htmlFor="gender-female"
+                    className={`flex items-center gap-3 p-3.5 rounded-xl border bg-slate-50/30 text-sm cursor-pointer transition-all duration-200 select-none
+                      ${
+                        values.gender === "Female"
+                          ? "border-indigo-500 bg-indigo-50/10 ring-4 ring-indigo-500/10 text-indigo-700 font-semibold"
+                          : touched.gender && errors.gender
+                          ? "border-rose-300 hover:border-rose-400"
+                          : "border-slate-200 hover:border-indigo-300 hover:bg-slate-50/50 text-slate-600"
+                      }`}
+                  >
+                    <input
+                      type="checkbox"
+                      id="gender-female"
+                      name="gender"
+                      checked={values.gender === "Female"}
+                      onChange={() => {
+                        setValues(prev => ({ ...prev, gender: prev.gender === "Female" ? "" : "Female" }));
+                        setTouched(prev => ({ ...prev, gender: true }));
+                      }}
+                      className="h-4.5 w-4.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0 cursor-pointer"
+                    />
+                    <div className="flex items-center gap-2">
+                      <Venus className={`h-4.5 w-4.5 ${values.gender === "Female" ? "text-indigo-600" : "text-slate-400"}`} />
+                      <span>Female <span className="font-normal font-sans opacity-80">/ महिला</span></span>
+                    </div>
+                  </label>
+                </div>
+
+                {/* Animated Validation Message Container */}
+                <div className="h-5 overflow-hidden">
+                  <AnimatePresence>
+                    {touched.gender && errors.gender && (
+                      <motion.p
+                        initial={{ y: -10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -10, opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="text-xs font-semibold text-rose-500 pl-1.5"
+                      >
+                        {errors.gender}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
 
               {/* Father's Name */}
               <InputField

@@ -15,7 +15,7 @@ function doPost(e) {
     var data = JSON.parse(jsonString);
     
     // 2. Validate essential fields to prevent empty database rows
-    if (!data.fullName || !data.age || !data.fathersName || !data.contactNumber || !data.aadhaarNumber || !data.district || !data.address) {
+    if (!data.fullName || !data.age || !data.gender || !data.fathersName || !data.contactNumber || !data.aadhaarNumber || !data.district || !data.address) {
       return ContentService.createTextOutput(JSON.stringify({
         status: "error",
         message: "Required fields are missing / आवश्यक फ़ील्ड गायब हैं"
@@ -32,6 +32,7 @@ function doPost(e) {
         "Timestamp / समय",
         "Full Name / पूरा नाम",
         "Age (years) / आयु (वर्ष)",
+        "Gender / लिंग",
         "Father's Name / पिता का नाम",
         "Contact Number / संपर्क संख्या",
         "Aadhaar Card Number / आधार कार्ड नंबर",
@@ -39,18 +40,22 @@ function doPost(e) {
         "Residential Address / आवासीय पता"
       ]);
       // Make headers bold for a professional visual look in Google Sheets
-      sheet.getRange(1, 1, 1, 8).setFontWeight("bold").setBackground("#f1f5f9");
+      sheet.getRange(1, 1, 1, 9).setFontWeight("bold").setBackground("#f1f5f9");
     } else {
-      // Automatic migration: check and insert "District" and "Aadhaar Card Number" columns if not present
+      // Automatic migration: check and insert "Gender", "District" and "Aadhaar Card Number" columns if not present
       var lastCol = sheet.getLastColumn();
       if (lastCol > 0) {
         var headerValues = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+        var hasGender = false;
         var hasDistrict = false;
         var hasAadhaar = false;
         
         for (var i = 0; i < headerValues.length; i++) {
           if (headerValues[i]) {
             var headerStr = headerValues[i].toString();
+            if (headerStr.indexOf("Gender") > -1) {
+              hasGender = true;
+            }
             if (headerStr.indexOf("District") > -1) {
               hasDistrict = true;
             }
@@ -60,7 +65,25 @@ function doPost(e) {
           }
         }
         
-        // Migrate "District / जिला" first if not present
+        // Migrate "Gender / लिंग" first if not present, placing it right after "Age"
+        if (!hasGender) {
+          var ageColIdx = 3; // Default fallback to column 3
+          for (var i = 0; i < headerValues.length; i++) {
+            if (headerValues[i] && headerValues[i].toString().indexOf("Age") > -1) {
+              ageColIdx = i + 1;
+              break;
+            }
+          }
+          sheet.insertColumnAfter(ageColIdx);
+          sheet.getRange(1, ageColIdx + 1).setValue("Gender / लिंग");
+          sheet.getRange(1, ageColIdx + 1).setFontWeight("bold").setBackground("#f1f5f9");
+          
+          // Re-fetch header info because column count changed
+          lastCol = sheet.getLastColumn();
+          headerValues = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+        }
+        
+        // Migrate "District / जिला" if not present
         if (!hasDistrict) {
           var addressColIdx = 7;
           for (var i = 0; i < headerValues.length; i++) {
@@ -107,6 +130,7 @@ function doPost(e) {
       timestamp,
       data.fullName.toString().trim(),
       parseInt(data.age, 10),
+      data.gender.toString().trim(),
       data.fathersName.toString().trim(),
       safeContactNumber,
       safeAadhaarNumber,
