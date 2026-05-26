@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Calendar, Users, Phone, MapPin, Map, Send, Loader2, AlertCircle } from "lucide-react";
+import { User, Calendar, Users, Phone, MapPin, Map, Send, Loader2, AlertCircle, Fingerprint } from "lucide-react";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -19,6 +19,7 @@ interface FormValues {
   age: string;
   fathersName: string;
   contactNumber: string;
+  aadhaarNumber: string;
   district: string;
   address: string;
 }
@@ -32,6 +33,7 @@ export default function Home() {
     age: "",
     fathersName: "",
     contactNumber: "",
+    aadhaarNumber: "",
     district: "",
     address: "",
   });
@@ -42,6 +44,7 @@ export default function Home() {
     age: false,
     fathersName: false,
     contactNumber: false,
+    aadhaarNumber: false,
     district: false,
     address: false,
   });
@@ -52,6 +55,7 @@ export default function Home() {
     age: "",
     fathersName: "",
     contactNumber: "",
+    aadhaarNumber: "",
     district: "",
     address: "",
   });
@@ -62,6 +66,7 @@ export default function Home() {
     age: false,
     fathersName: false,
     contactNumber: false,
+    aadhaarNumber: false,
     district: false,
     address: false,
   });
@@ -81,7 +86,7 @@ export default function Home() {
       case "fullName": {
         const cleaned = val.trim();
         if (cleaned.length === 0) {
-          err = "";
+          err = "Full Name is required / पूरा नाम आवश्यक है";
         } else if (!/^[a-zA-Z\s]+$/.test(cleaned)) {
           err = "Letters and spaces only / केवल अक्षर और स्पेस मान्य हैं";
         } else {
@@ -92,7 +97,7 @@ export default function Home() {
       case "age": {
         const parsed = parseInt(val, 10);
         if (val === "") {
-          err = "";
+          err = "Age is required / आयु आवश्यक है";
         } else if (isNaN(parsed) || !/^\d+$/.test(val)) {
           err = "Please enter a valid age number / कृपया एक मान्य आयु संख्या दर्ज करें";
         } else if (parsed < 1 || parsed > 120) {
@@ -105,7 +110,7 @@ export default function Home() {
       case "fathersName": {
         const cleaned = val.trim();
         if (cleaned.length === 0) {
-          err = "";
+          err = "Father's Name is required / पिता का नाम आवश्यक है";
         } else if (!/^[a-zA-Z\s]+$/.test(cleaned)) {
           err = "Letters and spaces only / केवल अक्षर और स्पेस मान्य हैं";
         } else {
@@ -115,9 +120,19 @@ export default function Home() {
       }
       case "contactNumber": {
         if (val === "") {
-          err = "";
+          err = "Contact Number is required / संपर्क संख्या आवश्यक है";
         } else if (!/^[6-9]\d{9}$/.test(val)) {
           err = "Enter a valid 10-digit number starting with 6-9 / 6-9 से शुरू होने वाला मान्य 10-अंकीय नंबर दर्ज करें";
+        } else {
+          valid = true;
+        }
+        break;
+      }
+      case "aadhaarNumber": {
+        if (val === "") {
+          err = "Aadhaar Card Number is required / आधार कार्ड संख्या आवश्यक है";
+        } else if (!/^\d{12}$/.test(val)) {
+          err = "Enter a valid 12-digit Aadhaar number / एक मान्य 12-अंकीय आधार संख्या दर्ज करें";
         } else {
           valid = true;
         }
@@ -126,7 +141,7 @@ export default function Home() {
       case "district": {
         const cleaned = val.trim();
         if (cleaned.length === 0) {
-          err = "";
+          err = "District is required / जिला आवश्यक है";
         } else if (!/^[a-zA-Z\s]+$/.test(cleaned)) {
           err = "Letters and spaces only / केवल अक्षर और स्पेस मान्य हैं";
         } else {
@@ -137,7 +152,7 @@ export default function Home() {
       case "address": {
         const cleaned = val.trim();
         if (cleaned.length === 0) {
-          err = "";
+          err = "Address is required / आवासीय पता आवश्यक है";
         } else {
           valid = true;
         }
@@ -196,20 +211,6 @@ export default function Home() {
       ) as FieldName | undefined;
 
       if (firstInvalidKey) {
-        const fieldErrors = { ...errors };
-        Object.keys(values).forEach((k) => {
-          const f = k as FieldName;
-          if (!values[f]) {
-            if (f === "fullName") fieldErrors[f] = "Full Name is required / पूरा नाम आवश्यक है";
-            if (f === "age") fieldErrors[f] = "Age is required / आयु आवश्यक है";
-            if (f === "fathersName") fieldErrors[f] = "Father's Name is required / पिता का नाम आवश्यक है";
-            if (f === "contactNumber") fieldErrors[f] = "Contact Number is required / संपर्क संख्या आवश्यक है";
-            if (f === "district") fieldErrors[f] = "District is required / जिला आवश्यक है";
-            if (f === "address") fieldErrors[f] = "Address is required / आवासीय पता आवश्यक है";
-          }
-        });
-        setErrors(fieldErrors);
-
         const el = document.getElementById(firstInvalidKey);
         el?.focus();
       }
@@ -251,6 +252,7 @@ export default function Home() {
           age: "",
           fathersName: "",
           contactNumber: "",
+          aadhaarNumber: "",
           district: "",
           address: "",
         });
@@ -259,6 +261,7 @@ export default function Home() {
           age: false,
           fathersName: false,
           contactNumber: false,
+          aadhaarNumber: false,
           district: false,
           address: false,
         });
@@ -381,6 +384,23 @@ export default function Home() {
                 error={touched.contactNumber ? errors.contactNumber : ""}
                 isValid={touched.contactNumber && validFields.contactNumber}
                 maxLength={10}
+                required
+              />
+
+              {/* Aadhaar Card Number */}
+              <InputField
+                id="aadhaarNumber"
+                name="aadhaarNumber"
+                type="text"
+                labelEn="Aadhaar Card Number"
+                labelHi="आधार कार्ड संख्या"
+                icon={Fingerprint}
+                value={values.aadhaarNumber}
+                onChange={handleChange}
+                onBlur={() => handleBlur("aadhaarNumber")}
+                error={touched.aadhaarNumber ? errors.aadhaarNumber : ""}
+                isValid={touched.aadhaarNumber && validFields.aadhaarNumber}
+                maxLength={12}
                 required
               />
 

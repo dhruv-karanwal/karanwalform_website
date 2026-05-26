@@ -15,7 +15,7 @@ function doPost(e) {
     var data = JSON.parse(jsonString);
     
     // 2. Validate essential fields to prevent empty database rows
-    if (!data.fullName || !data.age || !data.fathersName || !data.contactNumber || !data.district || !data.address) {
+    if (!data.fullName || !data.age || !data.fathersName || !data.contactNumber || !data.aadhaarNumber || !data.district || !data.address) {
       return ContentService.createTextOutput(JSON.stringify({
         status: "error",
         message: "Required fields are missing / आवश्यक फ़ील्ड गायब हैं"
@@ -34,28 +34,62 @@ function doPost(e) {
         "Age (years) / आयु (वर्ष)",
         "Father's Name / पिता का नाम",
         "Contact Number / संपर्क संख्या",
+        "Aadhaar Card Number / आधार कार्ड नंबर",
         "District / जिला",
         "Residential Address / आवासीय पता"
       ]);
       // Make headers bold for a professional visual look in Google Sheets
-      sheet.getRange(1, 1, 1, 7).setFontWeight("bold").setBackground("#f1f5f9");
+      sheet.getRange(1, 1, 1, 8).setFontWeight("bold").setBackground("#f1f5f9");
     } else {
-      // Automatic migration: check if "District" column exists, if not insert it
+      // Automatic migration: check and insert "District" and "Aadhaar Card Number" columns if not present
       var lastCol = sheet.getLastColumn();
       if (lastCol > 0) {
         var headerValues = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
         var hasDistrict = false;
+        var hasAadhaar = false;
+        
         for (var i = 0; i < headerValues.length; i++) {
-          if (headerValues[i] && headerValues[i].toString().indexOf("District") > -1) {
-            hasDistrict = true;
-            break;
+          if (headerValues[i]) {
+            var headerStr = headerValues[i].toString();
+            if (headerStr.indexOf("District") > -1) {
+              hasDistrict = true;
+            }
+            if (headerStr.indexOf("Aadhaar") > -1) {
+              hasAadhaar = true;
+            }
           }
         }
+        
+        // Migrate "District / जिला" first if not present
         if (!hasDistrict) {
-          // Insert "District / जिला" at column 6 (shifting Residential Address to 7)
-          sheet.insertColumnBefore(6);
-          sheet.getRange(1, 6).setValue("District / जिला");
-          sheet.getRange(1, 6).setFontWeight("bold").setBackground("#f1f5f9");
+          var addressColIdx = 7;
+          for (var i = 0; i < headerValues.length; i++) {
+            if (headerValues[i] && headerValues[i].toString().indexOf("Address") > -1) {
+              addressColIdx = i + 1;
+              break;
+            }
+          }
+          sheet.insertColumnBefore(addressColIdx);
+          sheet.getRange(1, addressColIdx).setValue("District / जिला");
+          sheet.getRange(1, addressColIdx).setFontWeight("bold").setBackground("#f1f5f9");
+          
+          // Re-fetch header info because column count changed
+          lastCol = sheet.getLastColumn();
+          headerValues = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+        }
+        
+        // Migrate "Aadhaar Card Number / आधार कार्ड नंबर" if not present
+        if (!hasAadhaar) {
+          var districtColIdx = 6;
+          for (var i = 0; i < headerValues.length; i++) {
+            if (headerValues[i] && headerValues[i].toString().indexOf("District") > -1) {
+              districtColIdx = i + 1;
+              break;
+            }
+          }
+          sheet.insertColumnBefore(districtColIdx);
+          sheet.getRange(1, districtColIdx).setValue("Aadhaar Card Number / आधार कार्ड नंबर");
+          sheet.getRange(1, districtColIdx).setFontWeight("bold").setBackground("#f1f5f9");
         }
       }
     }
@@ -63,9 +97,10 @@ function doPost(e) {
     // 5. Generate timezone-aware Timestamp
     var timestamp = new Date();
     
-    // 6. Format the contact number with a single quote prefix to prevent Google Sheets 
+    // 6. Format numerical values with a single quote prefix to prevent Google Sheets 
     // from stripping leading zeros or formatting it as a scientific number.
     var safeContactNumber = "'" + data.contactNumber.toString().trim();
+    var safeAadhaarNumber = "'" + data.aadhaarNumber.toString().trim();
     
     // 7. Append row to Google Sheets
     sheet.appendRow([
@@ -74,6 +109,7 @@ function doPost(e) {
       parseInt(data.age, 10),
       data.fathersName.toString().trim(),
       safeContactNumber,
+      safeAadhaarNumber,
       data.district.toString().trim(),
       data.address.toString().trim()
     ]);
