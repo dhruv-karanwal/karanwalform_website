@@ -39,6 +39,25 @@ function doPost(e) {
       ]);
       // Make headers bold for a professional visual look in Google Sheets
       sheet.getRange(1, 1, 1, 7).setFontWeight("bold").setBackground("#f1f5f9");
+    } else {
+      // Automatic migration: check if "District" column exists, if not insert it
+      var lastCol = sheet.getLastColumn();
+      if (lastCol > 0) {
+        var headerValues = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+        var hasDistrict = false;
+        for (var i = 0; i < headerValues.length; i++) {
+          if (headerValues[i] && headerValues[i].toString().indexOf("District") > -1) {
+            hasDistrict = true;
+            break;
+          }
+        }
+        if (!hasDistrict) {
+          // Insert "District / जिला" at column 6 (shifting Residential Address to 7)
+          sheet.insertColumnBefore(6);
+          sheet.getRange(1, 6).setValue("District / जिला");
+          sheet.getRange(1, 6).setFontWeight("bold").setBackground("#f1f5f9");
+        }
+      }
     }
     
     // 5. Generate timezone-aware Timestamp
