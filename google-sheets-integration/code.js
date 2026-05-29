@@ -13,19 +13,19 @@ function doPost(e) {
     // 1. Retrieve the text body and parse it as JSON
     var jsonString = e.postData.contents;
     var data = JSON.parse(jsonString);
-    
+
     // 2. Validate essential fields to prevent empty database rows
-    if (!data.fullName || !data.age || !data.gender || !data.fathersName || !data.contactNumber || !data.aadhaarNumber || !data.district || !data.address) {
+    if (!data.fullName || !data.age || !data.gender || !data.fathersName || !data.contactNumber || !data.district || !data.address) {
       return ContentService.createTextOutput(JSON.stringify({
         status: "error",
         message: "Required fields are missing / आवश्यक फ़ील्ड गायब हैं"
       }))
-      .setMimeType(ContentService.MimeType.JSON);
+        .setMimeType(ContentService.MimeType.JSON);
     }
-    
+
     // 3. Open the active spreadsheet and locate the active sheet tab
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    
+
     // 4. If the sheet is completely empty, write the column headers first
     if (sheet.getLastRow() === 0) {
       sheet.appendRow([
@@ -49,7 +49,7 @@ function doPost(e) {
         var hasGender = false;
         var hasDistrict = false;
         var hasAadhaar = false;
-        
+
         for (var i = 0; i < headerValues.length; i++) {
           if (headerValues[i]) {
             var headerStr = headerValues[i].toString();
@@ -64,7 +64,7 @@ function doPost(e) {
             }
           }
         }
-        
+
         // Migrate "Gender / लिंग" first if not present, placing it right after "Age"
         if (!hasGender) {
           var ageColIdx = 3; // Default fallback to column 3
@@ -77,12 +77,12 @@ function doPost(e) {
           sheet.insertColumnAfter(ageColIdx);
           sheet.getRange(1, ageColIdx + 1).setValue("Gender / लिंग");
           sheet.getRange(1, ageColIdx + 1).setFontWeight("bold").setBackground("#f1f5f9");
-          
+
           // Re-fetch header info because column count changed
           lastCol = sheet.getLastColumn();
           headerValues = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
         }
-        
+
         // Migrate "District / जिला" if not present
         if (!hasDistrict) {
           var addressColIdx = 7;
@@ -95,12 +95,12 @@ function doPost(e) {
           sheet.insertColumnBefore(addressColIdx);
           sheet.getRange(1, addressColIdx).setValue("District / जिला");
           sheet.getRange(1, addressColIdx).setFontWeight("bold").setBackground("#f1f5f9");
-          
+
           // Re-fetch header info because column count changed
           lastCol = sheet.getLastColumn();
           headerValues = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
         }
-        
+
         // Migrate "Aadhaar Card Number / आधार कार्ड नंबर" if not present
         if (!hasAadhaar) {
           var districtColIdx = 6;
@@ -116,15 +116,15 @@ function doPost(e) {
         }
       }
     }
-    
+
     // 5. Generate timezone-aware Timestamp
     var timestamp = new Date();
-    
+
     // 6. Format numerical values with a single quote prefix to prevent Google Sheets 
     // from stripping leading zeros or formatting it as a scientific number.
     var safeContactNumber = "'" + data.contactNumber.toString().trim();
-    var safeAadhaarNumber = "'" + data.aadhaarNumber.toString().trim();
-    
+    var safeAadhaarNumber = data.aadhaarNumber ? ("'" + data.aadhaarNumber.toString().trim()) : "";
+
     // 7. Append row to Google Sheets
     sheet.appendRow([
       timestamp,
@@ -137,20 +137,20 @@ function doPost(e) {
       data.district.toString().trim(),
       data.address.toString().trim()
     ]);
-    
+
     // 8. Return success response
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
       message: "Data saved successfully / डेटा सफलतापूर्वक सहेज लिया गया है"
     }))
-    .setMimeType(ContentService.MimeType.JSON);
-    
+      .setMimeType(ContentService.MimeType.JSON);
+
   } catch (error) {
     // Catch-all server error handler
     return ContentService.createTextOutput(JSON.stringify({
       status: "error",
       message: "Server Error: " + error.toString()
     }))
-    .setMimeType(ContentService.MimeType.JSON);
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }

@@ -56,7 +56,7 @@ export default function Home() {
 
   const [showToast, setShowToast] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Track submission/network errors from Apps Script API
   const [apiError, setApiError] = useState<string>("");
 
@@ -123,9 +123,10 @@ export default function Home() {
         break;
       }
       case "aadhaarNumber": {
-        if (val === "") {
-          err = "Aadhaar Card Number is required / आधार कार्ड संख्या आवश्यक है";
-        } else if (!/^\d{12}$/.test(val)) {
+        const cleaned = val.trim();
+        if (cleaned === "") {
+          valid = true;
+        } else if (!/^\d{12}$/.test(cleaned)) {
           err = "Enter a valid 12-digit Aadhaar number / एक मान्य 12-अंकीय आधार संख्या दर्ज करें";
         } else {
           valid = true;
@@ -196,7 +197,13 @@ export default function Home() {
     setTouched((prev) => ({ ...prev, [name]: true }));
   };
 
-  const filledCount = Object.values(validFields).filter(Boolean).length;
+  const filledCount = Object.keys(values).filter((key) => {
+    const field = key as FieldName;
+    if (field === "aadhaarNumber") {
+      return values.aadhaarNumber !== "" && validFields.aadhaarNumber;
+    }
+    return validFields[field];
+  }).length;
   const totalCount = Object.keys(values).length;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -370,16 +377,15 @@ export default function Home() {
                   Gender <span className="font-normal text-slate-400 font-sans">/ लिंग</span>
                   <span className="text-rose-500 ml-0.5">*</span>
                 </label>
-                
+
                 <div className="grid grid-cols-2 gap-4 pt-1">
                   {/* Male Checkbox Option */}
                   <label
                     htmlFor="gender-male"
                     className={`flex items-center gap-3 p-3.5 rounded-xl border bg-slate-50/30 text-sm cursor-pointer transition-all duration-200 select-none
-                      ${
-                        values.gender === "Male"
-                          ? "border-indigo-500 bg-indigo-50/10 ring-4 ring-indigo-500/10 text-indigo-700 font-semibold"
-                          : touched.gender && errors.gender
+                      ${values.gender === "Male"
+                        ? "border-indigo-500 bg-indigo-50/10 ring-4 ring-indigo-500/10 text-indigo-700 font-semibold"
+                        : touched.gender && errors.gender
                           ? "border-rose-300 hover:border-rose-400"
                           : "border-slate-200 hover:border-indigo-300 hover:bg-slate-50/50 text-slate-600"
                       }`}
@@ -405,10 +411,9 @@ export default function Home() {
                   <label
                     htmlFor="gender-female"
                     className={`flex items-center gap-3 p-3.5 rounded-xl border bg-slate-50/30 text-sm cursor-pointer transition-all duration-200 select-none
-                      ${
-                        values.gender === "Female"
-                          ? "border-indigo-500 bg-indigo-50/10 ring-4 ring-indigo-500/10 text-indigo-700 font-semibold"
-                          : touched.gender && errors.gender
+                      ${values.gender === "Female"
+                        ? "border-indigo-500 bg-indigo-50/10 ring-4 ring-indigo-500/10 text-indigo-700 font-semibold"
+                        : touched.gender && errors.gender
                           ? "border-rose-300 hover:border-rose-400"
                           : "border-slate-200 hover:border-indigo-300 hover:bg-slate-50/50 text-slate-600"
                       }`}
@@ -487,16 +492,15 @@ export default function Home() {
                 id="aadhaarNumber"
                 name="aadhaarNumber"
                 type="text"
-                labelEn="Aadhaar Card Number"
-                labelHi="आधार कार्ड संख्या"
+                labelEn="Aadhaar Card Number (Optional)"
+                labelHi="आधार कार्ड संख्या (वैकल्पिक)"
                 icon={Fingerprint}
                 value={values.aadhaarNumber}
                 onChange={handleChange}
                 onBlur={() => handleBlur("aadhaarNumber")}
                 error={touched.aadhaarNumber ? errors.aadhaarNumber : ""}
-                isValid={touched.aadhaarNumber && validFields.aadhaarNumber}
+                isValid={touched.aadhaarNumber && values.aadhaarNumber !== "" && validFields.aadhaarNumber}
                 maxLength={12}
-                required
               />
 
               {/* District */}
