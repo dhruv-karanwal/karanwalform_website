@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Calendar, Users, Phone, MapPin, Map, Send, Loader2, AlertCircle, Fingerprint, Mars, Venus } from "lucide-react";
+import { User, Calendar, Users, Phone, MapPin, Map, Send, Loader2, AlertCircle, Fingerprint, Mars, Venus, CreditCard, FileText } from "lucide-react";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -21,6 +21,8 @@ interface FormValues {
   fathersName: string;
   contactNumber: string;
   aadhaarNumber: string;
+  voterId: string;
+  otherId: string;
   district: string;
   address: string;
 }
@@ -36,6 +38,8 @@ export default function Home() {
     fathersName: "",
     contactNumber: "",
     aadhaarNumber: "",
+    voterId: "",
+    otherId: "",
     district: "",
     address: "",
   });
@@ -48,6 +52,8 @@ export default function Home() {
     fathersName: false,
     contactNumber: false,
     aadhaarNumber: false,
+    voterId: false,
+    otherId: false,
     district: false,
     address: false,
   });
@@ -123,11 +129,50 @@ export default function Home() {
         break;
       }
       case "aadhaarNumber": {
+        const hasAlternative = values.voterId.trim() !== "" || values.otherId.trim() !== "";
         const cleaned = val.trim();
         if (cleaned === "") {
-          valid = true;
+          if (hasAlternative) {
+            valid = true;
+          } else {
+            err = "At least one ID proof is required / कम से कम एक पहचान प्रमाण आवश्यक है";
+          }
         } else if (!/^\d{12}$/.test(cleaned)) {
           err = "Enter a valid 12-digit Aadhaar number / एक मान्य 12-अंकीय आधार संख्या दर्ज करें";
+        } else {
+          valid = true;
+        }
+        break;
+      }
+      case "voterId": {
+        const hasAlternative = values.aadhaarNumber.trim() !== "" || values.otherId.trim() !== "";
+        const cleaned = val.trim();
+        if (cleaned === "") {
+          if (hasAlternative) {
+            valid = true;
+          } else {
+            err = "At least one ID proof is required / कम से कम एक पहचान प्रमाण आवश्यक है";
+          }
+        } else if (cleaned.length < 5 || cleaned.length > 20) {
+          err = "Voter ID must be between 5 and 20 characters / मतदाता पहचान पत्र 5 से 20 वर्णों के बीच होना चाहिए";
+        } else if (!/^[a-zA-Z0-9\s/-]+$/.test(cleaned)) {
+          err = "Enter a valid alphanumeric Voter ID / एक मान्य अल्फ़ान्यूमेरिक मतदाता पहचान पत्र दर्ज करें";
+        } else {
+          valid = true;
+        }
+        break;
+      }
+      case "otherId": {
+        const hasAlternative = values.aadhaarNumber.trim() !== "" || values.voterId.trim() !== "";
+        const cleaned = val.trim();
+        if (cleaned === "") {
+          if (hasAlternative) {
+            valid = true;
+          } else {
+            err = "At least one ID proof is required / कम कम एक पहचान प्रमाण आवश्यक है";
+          }
+        } else if (cleaned.length < 3) {
+          err = "ID number must be at least 3 characters / आईडी नंबर कम से कम 3 वर्णों का होना चाहिए";
         } else {
           valid = true;
         }
@@ -166,6 +211,8 @@ export default function Home() {
     fathersName: "",
     contactNumber: "",
     aadhaarNumber: "",
+    voterId: "",
+    otherId: "",
     district: "",
     address: "",
   };
@@ -177,6 +224,8 @@ export default function Home() {
     fathersName: false,
     contactNumber: false,
     aadhaarNumber: false,
+    voterId: false,
+    otherId: false,
     district: false,
     address: false,
   };
@@ -197,14 +246,18 @@ export default function Home() {
     setTouched((prev) => ({ ...prev, [name]: true }));
   };
 
+  const idFields: FieldName[] = ["aadhaarNumber", "voterId", "otherId"];
+  const isIdFilled = idFields.some(field => values[field] !== "" && validFields[field]);
+
   const filledCount = Object.keys(values).filter((key) => {
     const field = key as FieldName;
-    if (field === "aadhaarNumber") {
-      return values.aadhaarNumber !== "" && validFields.aadhaarNumber;
+    if (idFields.includes(field)) {
+      return false;
     }
     return validFields[field];
-  }).length;
-  const totalCount = Object.keys(values).length;
+  }).length + (isIdFilled ? 1 : 0);
+
+  const totalCount = Object.keys(values).length - idFields.length + 1;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -269,6 +322,8 @@ export default function Home() {
           fathersName: "",
           contactNumber: "",
           aadhaarNumber: "",
+          voterId: "",
+          otherId: "",
           district: "",
           address: "",
         });
@@ -279,6 +334,8 @@ export default function Home() {
           fathersName: false,
           contactNumber: false,
           aadhaarNumber: false,
+          voterId: false,
+          otherId: false,
           district: false,
           address: false,
         });
@@ -319,10 +376,10 @@ export default function Home() {
           {/* Intro Text header */}
           <div className="form-header-intro text-center mb-8 space-y-2">
             <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
-              KaranwalGroup Portal / करनवाल ग्रुप पोर्टल
+              KarnwalGroup Portal / कर्नवाल ग्रुप पोर्टल
             </span>
             <h2 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">
-              KaranwalGroup Form <span className="text-indigo-600 font-medium font-sans">/ करनवाल ग्रुप फॉर्म</span>
+              KarnwalGroup Form <span className="text-indigo-600 font-medium font-sans">/ कर्नवाल ग्रुप फॉर्म</span>
             </h2>
             <p className="text-xs text-slate-500 font-medium max-w-md mx-auto sm:text-sm">
               Please enter your accurate personal credentials below. Every field marked is essential for dynamic profile creation.
@@ -487,21 +544,69 @@ export default function Home() {
                 required
               />
 
-              {/* Aadhaar Card Number */}
-              <InputField
-                id="aadhaarNumber"
-                name="aadhaarNumber"
-                type="text"
-                labelEn="Aadhaar Card Number (Optional)"
-                labelHi="आधार कार्ड संख्या (वैकल्पिक)"
-                icon={Fingerprint}
-                value={values.aadhaarNumber}
-                onChange={handleChange}
-                onBlur={() => handleBlur("aadhaarNumber")}
-                error={touched.aadhaarNumber ? errors.aadhaarNumber : ""}
-                isValid={touched.aadhaarNumber && values.aadhaarNumber !== "" && validFields.aadhaarNumber}
-                maxLength={12}
-              />
+              {/* Identity Verification Section */}
+              <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4.5 space-y-4">
+                <div className="border-b border-slate-100 pb-2">
+                  <h3 className="text-xs font-bold text-slate-700 sm:text-sm">
+                    Identity Proof <span className="text-indigo-600 font-medium font-sans">/ पहचान प्रमाण</span>
+                    <span className="text-rose-500 ml-0.5">*</span>
+                  </h3>
+                  <p className="text-[10px] text-slate-500 font-medium mt-1 leading-relaxed">
+                    Please provide at least one valid Government Identity proof. Any one of Aadhaar Card, Voter ID, or other ID is compulsory.
+                    <span className="block mt-0.5 font-sans text-indigo-500 font-semibold">
+                      कृपया कम से कम एक वैध सरकारी पहचान प्रमाण प्रदान करें। आधार कार्ड, मतदाता पहचान पत्र, या अन्य पहचान पत्र में से कोई भी एक अनिवार्य है।
+                    </span>
+                  </p>
+                </div>
+
+                {/* Aadhaar Card Number */}
+                <InputField
+                  id="aadhaarNumber"
+                  name="aadhaarNumber"
+                  type="text"
+                  labelEn="Aadhaar Card Number"
+                  labelHi="आधार कार्ड संख्या"
+                  icon={Fingerprint}
+                  value={values.aadhaarNumber}
+                  onChange={handleChange}
+                  onBlur={() => handleBlur("aadhaarNumber")}
+                  error={touched.aadhaarNumber ? errors.aadhaarNumber : ""}
+                  isValid={touched.aadhaarNumber && values.aadhaarNumber !== "" && validFields.aadhaarNumber}
+                  maxLength={12}
+                />
+
+                {/* Voter ID Card Number */}
+                <InputField
+                  id="voterId"
+                  name="voterId"
+                  type="text"
+                  labelEn="Voter ID Card Number"
+                  labelHi="मतदाता पहचान पत्र संख्या"
+                  icon={CreditCard}
+                  value={values.voterId}
+                  onChange={handleChange}
+                  onBlur={() => handleBlur("voterId")}
+                  error={touched.voterId ? errors.voterId : ""}
+                  isValid={touched.voterId && values.voterId !== "" && validFields.voterId}
+                  maxLength={20}
+                />
+
+                {/* Other ID Card Number */}
+                <InputField
+                  id="otherId"
+                  name="otherId"
+                  type="text"
+                  labelEn="Other Government ID (PAN, Passport, etc.)"
+                  labelHi="अन्य सरकारी पहचान पत्र (पैन, पासपोर्ट, आदि)"
+                  icon={FileText}
+                  value={values.otherId}
+                  onChange={handleChange}
+                  onBlur={() => handleBlur("otherId")}
+                  error={touched.otherId ? errors.otherId : ""}
+                  isValid={touched.otherId && values.otherId !== "" && validFields.otherId}
+                  maxLength={20}
+                />
+              </div>
 
               {/* District */}
               <InputField

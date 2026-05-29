@@ -19,7 +19,7 @@ export default function Footer() {
           {/* Legal and Disclaimer Notice */}
           <div className="space-y-1 sm:text-right">
             <p className="text-xs font-bold text-slate-500">
-              © {new Date().getFullYear()} KaranwalGroup. All Rights Reserved.
+              © {new Date().getFullYear()} KarnwalGroup. All Rights Reserved.
             </p>
             <p className="text-[10px] text-slate-400 leading-relaxed">
               This is a secure official registration utility. Your personal data is protected under absolute privacy regulations.

@@ -23,6 +23,15 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
+    // Enforce that at least one ID proof is supplied
+    if (!data.aadhaarNumber && !data.voterId && !data.otherId) {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "error",
+        message: "At least one ID proof is required / कम से कम एक पहचान प्रमाण आवश्यक है"
+      }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     // 3. Open the active spreadsheet and locate the active sheet tab
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
 
@@ -36,11 +45,13 @@ function doPost(e) {
         "Father's Name / पिता का नाम",
         "Contact Number / संपर्क संख्या",
         "Aadhaar Card Number / आधार कार्ड नंबर",
+        "Voter ID / मतदाता पहचान पत्र",
+        "Other ID / अन्य पहचान पत्र",
         "District / जिला",
         "Residential Address / आवासीय पता"
       ]);
       // Make headers bold for a professional visual look in Google Sheets
-      sheet.getRange(1, 1, 1, 9).setFontWeight("bold").setBackground("#f1f5f9");
+      sheet.getRange(1, 1, 1, 11).setFontWeight("bold").setBackground("#f1f5f9");
     } else {
       // Automatic migration: check and insert "Gender", "District" and "Aadhaar Card Number" columns if not present
       var lastCol = sheet.getLastColumn();
@@ -49,6 +60,8 @@ function doPost(e) {
         var hasGender = false;
         var hasDistrict = false;
         var hasAadhaar = false;
+        var hasVoterId = false;
+        var hasOtherId = false;
 
         for (var i = 0; i < headerValues.length; i++) {
           if (headerValues[i]) {
@@ -61,6 +74,12 @@ function doPost(e) {
             }
             if (headerStr.indexOf("Aadhaar") > -1) {
               hasAadhaar = true;
+            }
+            if (headerStr.indexOf("Voter ID") > -1) {
+              hasVoterId = true;
+            }
+            if (headerStr.indexOf("Other ID") > -1) {
+              hasOtherId = true;
             }
           }
         }
@@ -113,6 +132,42 @@ function doPost(e) {
           sheet.insertColumnBefore(districtColIdx);
           sheet.getRange(1, districtColIdx).setValue("Aadhaar Card Number / आधार कार्ड नंबर");
           sheet.getRange(1, districtColIdx).setFontWeight("bold").setBackground("#f1f5f9");
+
+          // Re-fetch header info because column count changed
+          lastCol = sheet.getLastColumn();
+          headerValues = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+        }
+
+        // Migrate "Voter ID / मतदाता पहचान पत्र" if not present
+        if (!hasVoterId) {
+          var districtColIdx = 7;
+          for (var i = 0; i < headerValues.length; i++) {
+            if (headerValues[i] && headerValues[i].toString().indexOf("District") > -1) {
+              districtColIdx = i + 1;
+              break;
+            }
+          }
+          sheet.insertColumnBefore(districtColIdx);
+          sheet.getRange(1, districtColIdx).setValue("Voter ID / मतदाता पहचान पत्र");
+          sheet.getRange(1, districtColIdx).setFontWeight("bold").setBackground("#f1f5f9");
+
+          // Re-fetch header info because column count changed
+          lastCol = sheet.getLastColumn();
+          headerValues = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+        }
+
+        // Migrate "Other ID / अन्य पहचान पत्र" if not present
+        if (!hasOtherId) {
+          var districtColIdx = 8;
+          for (var i = 0; i < headerValues.length; i++) {
+            if (headerValues[i] && headerValues[i].toString().indexOf("District") > -1) {
+              districtColIdx = i + 1;
+              break;
+            }
+          }
+          sheet.insertColumnBefore(districtColIdx);
+          sheet.getRange(1, districtColIdx).setValue("Other ID / अन्य पहचान पत्र");
+          sheet.getRange(1, districtColIdx).setFontWeight("bold").setBackground("#f1f5f9");
         }
       }
     }
@@ -124,6 +179,8 @@ function doPost(e) {
     // from stripping leading zeros or formatting it as a scientific number.
     var safeContactNumber = "'" + data.contactNumber.toString().trim();
     var safeAadhaarNumber = data.aadhaarNumber ? ("'" + data.aadhaarNumber.toString().trim()) : "";
+    var safeVoterId = data.voterId ? ("'" + data.voterId.toString().trim()) : "";
+    var safeOtherId = data.otherId ? ("'" + data.otherId.toString().trim()) : "";
 
     // 7. Append row to Google Sheets
     sheet.appendRow([
@@ -134,6 +191,8 @@ function doPost(e) {
       data.fathersName.toString().trim(),
       safeContactNumber,
       safeAadhaarNumber,
+      safeVoterId,
+      safeOtherId,
       data.district.toString().trim(),
       data.address.toString().trim()
     ]);

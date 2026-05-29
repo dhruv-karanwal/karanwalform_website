@@ -16,25 +16,25 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://karanwalform-website.vercel.app"),
-  title: "KaranwalGroup Form",
-  description: "Official KaranwalGroup Registration Form",
-  keywords: ["KaranwalGroup", "Form", "Registration", "Survey", "Bilingual Form", "पंजीकरण फॉर्म"],
-  authors: [{ name: "KaranwalGroup" }],
+  metadataBase: new URL("https://karnwalform-website.vercel.app"),
+  title: "KarnwalGroup Form",
+  description: "Official KarnwalGroup Registration Form",
+  keywords: ["KarnwalGroup", "Form", "Registration", "Survey", "Bilingual Form", "पंजीकरण फॉर्म"],
+  authors: [{ name: "KarnwalGroup" }],
   robots: {
     index: true,
     follow: true,
   },
   appleWebApp: {
     capable: true,
-    title: "KaranwalGroup Form",
+    title: "KarnwalGroup Form",
     statusBarStyle: "default",
   },
   openGraph: {
-    title: "KaranwalGroup Form",
-    description: "Official KaranwalGroup Registration Form",
-    url: "https://karanwalform-website.vercel.app",
-    siteName: "KaranwalGroup Form",
+    title: "KarnwalGroup Form",
+    description: "Official KarnwalGroup Registration Form",
+    url: "https://karnwalform-website.vercel.app",
+    siteName: "KarnwalGroup Form",
     type: "website",
     locale: "en_IN",
     images: [
@@ -42,14 +42,14 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "KaranwalGroup Form Social Share Preview",
+        alt: "KarnwalGroup Form Social Share Preview",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "KaranwalGroup Form",
-    description: "Official KaranwalGroup Registration Form",
+    title: "KarnwalGroup Form",
+    description: "Official KarnwalGroup Registration Form",
     images: ["/og-image.png"],
   },
 };
