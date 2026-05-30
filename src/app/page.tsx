@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FormProgress from "@/components/FormProgress";
 import InputField from "@/components/InputField";
+import PhoneInputField, { COUNTRIES } from "@/components/PhoneInputField";
 import TextareaField from "@/components/TextareaField";
 import Toast from "@/components/Toast";
 
@@ -19,6 +20,7 @@ interface FormValues {
   age: string;
   gender: string;
   fathersName: string;
+  countryCode: string;
   contactNumber: string;
   aadhaarNumber: string;
   voterId: string;
@@ -36,6 +38,7 @@ export default function Home() {
     age: "",
     gender: "",
     fathersName: "",
+    countryCode: "+91",
     contactNumber: "",
     aadhaarNumber: "",
     voterId: "",
@@ -50,6 +53,7 @@ export default function Home() {
     age: false,
     gender: false,
     fathersName: false,
+    countryCode: false,
     contactNumber: false,
     aadhaarNumber: false,
     voterId: false,
@@ -110,7 +114,7 @@ export default function Home() {
       case "fathersName": {
         const cleaned = val.trim();
         if (cleaned.length === 0) {
-          err = "Father's Name is required / पिता का नाम आवश्यक है";
+          err = "Father's / Husband's Name is required / पिता / पति का नाम आवश्यक है";
         } else if (!/^[a-zA-Z\s]+$/.test(cleaned)) {
           err = "Letters and spaces only / केवल अक्षर और स्पेस मान्य हैं";
         } else {
@@ -118,13 +122,29 @@ export default function Home() {
         }
         break;
       }
+      case "countryCode": {
+        valid = true;
+        break;
+      }
       case "contactNumber": {
         if (val === "") {
           err = "Contact Number is required / संपर्क संख्या आवश्यक है";
-        } else if (!/^[6-9]\d{9}$/.test(val)) {
-          err = "Enter a valid 10-digit number starting with 6-9 / 6-9 से शुरू होने वाला मान्य 10-अंकीय नंबर दर्ज करें";
         } else {
-          valid = true;
+          const activeCountry = COUNTRIES.find(c => c.code === values.countryCode) || COUNTRIES[0];
+          if (values.countryCode === "+91") {
+            if (!/^[6-9]\d{9}$/.test(val)) {
+              err = "Enter a valid 10-digit number starting with 6-9 / 6-9 से शुरू होने वाला मान्य 10-अंकीय नंबर दर्ज करें";
+            } else {
+              valid = true;
+            }
+          } else {
+            const digitsOnly = val.replace(/\D/g, "");
+            if (digitsOnly.length !== activeCountry.maxLength) {
+              err = `Enter a valid ${activeCountry.maxLength}-digit number / एक मान्य ${activeCountry.maxLength}-अंकीय नंबर दर्ज करें`;
+            } else {
+              valid = true;
+            }
+          }
         }
         break;
       }
@@ -209,6 +229,7 @@ export default function Home() {
     age: "",
     gender: "",
     fathersName: "",
+    countryCode: "",
     contactNumber: "",
     aadhaarNumber: "",
     voterId: "",
@@ -222,6 +243,7 @@ export default function Home() {
     age: false,
     gender: false,
     fathersName: false,
+    countryCode: true,
     contactNumber: false,
     aadhaarNumber: false,
     voterId: false,
@@ -296,6 +318,13 @@ export default function Home() {
         throw new Error("API URL is not configured. Please paste your Google Apps Script URL. / एपीआई यूआरएल कॉन्फ़िगर नहीं है। कृपया अपना Google Apps Script URL पेस्ट करें।");
       }
 
+      // Combine countryCode and contactNumber for storage in the single Google Sheet column
+      const { countryCode, ...payloadValues } = values;
+      const payload = {
+        ...payloadValues,
+        contactNumber: `${values.countryCode} ${values.contactNumber}`,
+      };
+
       // We transmit the JSON body as "text/plain" to bypass CORS pre-flight OPTIONS blockades
       const response = await fetch(endpoint, {
         method: "POST",
@@ -303,7 +332,7 @@ export default function Home() {
         headers: {
           "Content-Type": "text/plain",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -320,6 +349,7 @@ export default function Home() {
           age: "",
           gender: "",
           fathersName: "",
+          countryCode: "+91",
           contactNumber: "",
           aadhaarNumber: "",
           voterId: "",
@@ -332,6 +362,7 @@ export default function Home() {
           age: false,
           gender: false,
           fathersName: false,
+          countryCode: false,
           contactNumber: false,
           aadhaarNumber: false,
           voterId: false,
@@ -511,13 +542,13 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Father's Name */}
+              {/* Father's / Husband's Name */}
               <InputField
                 id="fathersName"
                 name="fathersName"
                 type="text"
-                labelEn="Father's Name"
-                labelHi="पिता का नाम"
+                labelEn="Father's / Husband's Name"
+                labelHi="पिता / पति का नाम"
                 icon={Users}
                 value={values.fathersName}
                 onChange={handleChange}
@@ -527,20 +558,27 @@ export default function Home() {
                 required
               />
 
-              {/* Contact Number */}
-              <InputField
+              {/* Contact Number with Premium Country Selector */}
+              <PhoneInputField
                 id="contactNumber"
-                name="contactNumber"
-                type="tel"
                 labelEn="Contact Number"
                 labelHi="संपर्क संख्या"
-                icon={Phone}
                 value={values.contactNumber}
-                onChange={handleChange}
+                selectedCode={values.countryCode}
+                onCountryChange={(country) => {
+                  setValues((prev) => ({
+                    ...prev,
+                    countryCode: country.code,
+                    contactNumber: "",
+                  }));
+                  setTouched((prev) => ({ ...prev, contactNumber: false }));
+                }}
+                onChange={(val) => {
+                  setValues((prev) => ({ ...prev, contactNumber: val }));
+                }}
                 onBlur={() => handleBlur("contactNumber")}
                 error={touched.contactNumber ? errors.contactNumber : ""}
                 isValid={touched.contactNumber && validFields.contactNumber}
-                maxLength={10}
                 required
               />
 

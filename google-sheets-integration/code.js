@@ -42,7 +42,7 @@ function doPost(e) {
         "Full Name / पूरा नाम",
         "Age (years) / आयु (वर्ष)",
         "Gender / लिंग",
-        "Father's Name / पिता का नाम",
+        "Father's / Husband's Name / पिता / पति का नाम",
         "Contact Number / संपर्क संख्या",
         "Aadhaar Card Number / आधार कार्ड नंबर",
         "Voter ID / मतदाता पहचान पत्र",
